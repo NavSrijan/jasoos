@@ -10,7 +10,7 @@ class Person():
         self.gender = ""
         self.hobbies = ""
     def returnEmbed(self):
-        my = Embed(title=self.name, description="f{self.age}\n{self.gender}\n{self.location}",color=0xf1c40f)
+        my = Embed(title=self.name, description=f"{self.age}\n{self.gender}\n{self.location}",color=0xf1c40f)
         return my
 
 def takeIntro(p1,msg=""):
