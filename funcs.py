@@ -1,5 +1,3 @@
-from dataclasses import field
-from turtle import color
 from discord import Embed
 import pycountry
 import pdb
