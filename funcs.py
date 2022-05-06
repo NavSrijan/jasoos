@@ -1,5 +1,5 @@
 from discord import Embed
-import pdb
+import pycountry
 class Person():
     def __init__(self, author):
         self.state = 0
