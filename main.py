@@ -22,7 +22,6 @@ client = discord.Client()
 
 config = configparser.ConfigParser()
 config.read("config")
-pdb.set_trace()
 commands = config["commands"]
 
 # Variabels
