@@ -1,6 +1,10 @@
 from discord import Embed
 import pycountry
 import pdb
+
+#VARIABLES
+
+
 class Person():
     def __init__(self, author):
         self.state = 0
@@ -8,9 +12,10 @@ class Person():
         self.id = author.id
         self.name = ""
         self.age = ""
+        self.embedSent = False
         self.gender = ""
         self.hobbies = ""
-        self.location = ''
+        self.location = ""
 
         self.indian = False
     def returnEmbed(self):
@@ -40,6 +45,9 @@ def returnStateEmbed():
     return emb
 
 def takeIntro(p1,msg=""):
+
+
+
     state = p1.state
     reply = ""
     response = True
@@ -102,9 +110,11 @@ def takeIntro(p1,msg=""):
             country  = pycountry.countries.search_fuzzy(tLoc)
             if len(country)>0:
                 country = country[0]
+                p1.location = country.name
                 reply = f"So, you are from {country.name}\n What are your hobbies?"
                 p1.state+=1
             else:
+                print("ERROR ASSIGNING COUNTRY")
                 raise Exception
         except:
             reply = "Your country is not big enough."
@@ -114,5 +124,5 @@ def takeIntro(p1,msg=""):
         reply = ""
         response = False
 
-
+    
     return p1,reply,response,isEmbed

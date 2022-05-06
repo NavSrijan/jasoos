@@ -25,6 +25,10 @@ config.read("config")
 commands = config["commands"]
 
 # Variabels
+alreadyAskedToGiveIntro = False
+alreadySentEmbed = False
+allowToaskOthers = False
+
 people = []
 waitForReaction = False
 
@@ -35,6 +39,8 @@ async def on_ready():
 @client.event
 async def on_message(message):
     global waitForReaction
+    global alreadyAskedToGiveIntro
+    global allowToaskOthers
     if message.author == client.user:
         return
 
@@ -50,6 +56,7 @@ async def on_message(message):
             p1 = Person(message.author)
             p,reply,response,isEmbed = takeIntro(p1,msg=message)
             people.append(p)
+            allowToaskOthers = True
             
         else:
             pass
@@ -69,11 +76,18 @@ async def on_message(message):
                     elif response == "Reaction":
                         waitForReaction = True
                     else:
-                        embed = i.returnEmbed()
-                        await message.channel.send(embed=embed)
+                        
+                        if p1.embedSent:
+                            embed = i.returnEmbed()
+                            await message.channel.send(embed=embed)
+                            p1.sentEmbed = True
+                            
                 return
         # If someone messages in between when someone is mid-way.
-        await message.reply(f"You can start your own intro process by typing {commands['start']}.")
+        if not alreadyAskedToGiveIntro:
+            if allowToaskOthers:
+                await message.reply(f"You can start your own intro process by typing {commands['start']}.")
+                alreadyAskedToGiveIntro = True
 
 @client.event
 async def on_reaction_add(reaction, user):
