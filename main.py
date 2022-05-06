@@ -44,9 +44,9 @@ async def on_message(message):
         for i in people:
             if i.id==message.author.id:
                 alreadyPresent = True
+                reply = "You have already given your intro."
         # If the person is new and hasn't started the intro process yet.
         if alreadyPresent==False:
-            await message.reply("starting")
             p1 = Person(message.author)
             p,reply,response = takeIntro(p1,msg=message)
             people.append(p)
