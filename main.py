@@ -81,11 +81,11 @@ async def on_reaction_add(reaction, user):
     emoji = reaction.emoji
     for i in people:
         if i.id == reaction.message.author.id:    
-            people[people.index(i)], reply, response = takeIntro(i,msg=message)
+            people[people.index(i)], reply, response = takeIntro(i,msg=reaction.message)
             # If response is required.
             waitForReaction = False
             if response==True:
-                await message.reply(reply)
+                await reaction.message.reply(reply)
             elif response == "Reaction":
                 waitForReaction = True
 
