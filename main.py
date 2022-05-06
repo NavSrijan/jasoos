@@ -92,5 +92,4 @@ async def on_reaction_add(reaction, user):
             elif response == "Reaction":
                 waitForReaction = True
 
-        
 client.run(config['credentials']['token'])

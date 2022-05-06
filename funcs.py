@@ -14,9 +14,15 @@ class Person():
 
         self.indian = False
     def returnEmbed(self):
-        my = Embed(title=self.name, description=f"{self.age}\n{self.gender}\n{self.location}",color=0xf1c40f)
+        my = Embed(set_author_name='APUN KA BOT',
+                   title = self.name,
+                   description = '**Your general intro**',
+                   color=0xf1c40f ) 
+        my.add_field(name='Age', value=self.age, inline=True)
+        my.add_field(name='Gender', value=self.gender, inline=True)
+        my.add_field(name='Hobbies', value=self.hobbies, inline=True)
+        my.add_field(name='Location', value=self.location, inline=True)
         return my
-
 def returnStateEmbed():
     states = list(pycountry.subdivisions.get(country_code="IN"))
     states_names = []
