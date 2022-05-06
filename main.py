@@ -48,7 +48,7 @@ async def on_message(message):
         # If the person is new and hasn't started the intro process yet.
         if alreadyPresent==False:
             p1 = Person(message.author)
-            p,reply,response = takeIntro(p1,msg=message)
+            p,reply,response,isEmbed = takeIntro(p1,msg=message)
             people.append(p)
             
         else:
@@ -59,10 +59,13 @@ async def on_message(message):
         for i in people:
             if i.id == message.author.id:
                 if waitForReaction==False:
-                    people[people.index(i)], reply, response = takeIntro(i,msg=message)
+                    people[people.index(i)], reply, response, isEmbed = takeIntro(i,msg=message)
                     # If response is required.
                     if response==True:
-                        await message.reply(reply)
+                        if isEmbed == False:
+                            await message.reply(reply)
+                        else:
+                            await message.reply(embed=reply)
                     elif response == "Reaction":
                         waitForReaction = True
                     else:
@@ -81,7 +84,7 @@ async def on_reaction_add(reaction, user):
     emoji = reaction.emoji
     for i in people:
         if i.id == reaction.message.author.id:    
-            people[people.index(i)], reply, response = takeIntro(i,msg=reaction.message)
+            people[people.index(i)], reply, response, isEmbed = takeIntro(i,msg=reaction.message)
             # If response is required.
             waitForReaction = False
             if response==True:
