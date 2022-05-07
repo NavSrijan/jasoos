@@ -25,9 +25,7 @@ config.read("config")
 commands = config["commands"]
 
 # Variabels
-alreadyAskedToGiveIntro = False
-alreadySentEmbed = False
-allowToaskOthers = False
+globalMessages = []
 
 people = []
 waitForReaction = False
@@ -39,55 +37,68 @@ async def on_ready():
 @client.event
 async def on_message(message):
     global waitForReaction
-    global alreadyAskedToGiveIntro
-    global allowToaskOthers
-    if message.author == client.user:
-        return
+    global globalMessages
+    if message.channel.id==int(config["credentials"]["commandsChannel"]):
+        if message.author == client.user:
+            return
 
-    if message.content==commands["start"]:
-        # Checking if this person is already in an instance of a running intro.
-        alreadyPresent = False
-        for i in people:
-            if i.id==message.author.id:
-                alreadyPresent = True
-                reply = "You have already given your intro!!!"
-        # If the person is new and hasn't started the intro process yet.
-        if alreadyPresent==False:
-            p1 = Person(message.author)
-            p,reply,response,isEmbed = takeIntro(p1,msg=message)
-            people.append(p)
-            allowToaskOthers = True
-            
+        if message.content==commands["start"]:
+            # Checking if this person is already in an instance of a running intro.
+            alreadyPresent = False
+            for i in people:
+                if i.id==message.author.id:
+                    alreadyPresent = True
+                    reply = "You have already given your intro!!!"
+            # If the person is new and hasn't started the intro process yet.
+            if alreadyPresent==False:
+                p1 = Person(message.author)
+                p1.pfp = message.author.avatar_url
+                p,reply,response,isEmbed = takeIntro(p1,msg=message)
+                q = await message.reply(reply)
+                p.messages.append(q)
+                p.messages.append(message)
+                people.append(p)
+            else:
+                pass
         else:
-            pass
-        await message.reply(reply)
-    else:
-        # People who are in mid-way process.
-        for i in people:
-            if i.id == message.author.id:
-                if waitForReaction==False:
-                    people[people.index(i)], reply, response, isEmbed = takeIntro(i,msg=message)
-                    # If response is required.
-                    if response==True:
-                        if isEmbed == False:
-                            await message.reply(reply)
+            # People who are in mid-way process.
+            for i in people:
+                if i.id == message.author.id:
+                    if waitForReaction==False:
+                        people[people.index(i)], reply, response, isEmbed = takeIntro(i,msg=message)
+                        # If response is required.
+                        if response==True:
+                            if isEmbed == False:
+                                q = await message.reply(reply)
+                                i.messages.append(q)
+                            else:
+                                q = await message.reply(embed=reply)
+                                i.messages.append(q)
+                        elif response == "Reaction":
+                            waitForReaction = True
                         else:
-                            await message.reply(embed=reply)
-                    elif response == "Reaction":
-                        waitForReaction = True
-                    else:
-                        
-                        if p1.embedSent:
-                            embed = i.returnEmbed()
-                            await message.channel.send(embed=embed)
-                            p1.sentEmbed = True
-                            
-                return
-        # If someone messages in between when someone is mid-way.
-        if not alreadyAskedToGiveIntro:
-            if allowToaskOthers:
-                await message.reply(f"You can start your own intro process by typing {commands['start']}.")
-                alreadyAskedToGiveIntro = True
+                            if reply!="RESTART":
+                                embed = i.returnEmbed()
+                                channel = client.get_channel(int(config["credentials"]["intro"]))
+                                q = await channel.send(embed=embed)
+                            else:
+                                q = await message.channel.send("Please restart then.")
+                                globalMessages.append(q)
+                            for j in i.messages:
+                                try:
+                                    await j.delete()
+                                except:
+                                    pass
+                            for k in globalMessages:
+                                try:
+                                    await k.delete()
+                                except:
+                                    pass
+                            people.pop(people.index(i))
+                    return
+            # If someone messages in between when someone is mid-way.
+            q = await message.reply(f"You can start your own intro process by typing {commands['start']}.")
+            globalMessages.append(q)
 
 @client.event
 async def on_reaction_add(reaction, user):
@@ -102,7 +113,8 @@ async def on_reaction_add(reaction, user):
             # If response is required.
             waitForReaction = False
             if response==True:
-                await reaction.message.reply(reply)
+                q = await reaction.message.reply(reply)
+                i.messages.append(q)
             elif response == "Reaction":
                 waitForReaction = True
 
