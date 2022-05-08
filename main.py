@@ -8,7 +8,8 @@
 import discord
 from funcs import Person,takeIntro
 import configparser 
-import pdb
+from database import apppendMember
+import os
 
 """
 Name
@@ -24,6 +25,11 @@ config = configparser.ConfigParser()
 config.read("config")
 commands = config["commands"]
 
+token = os.environ["token"]
+commandsChannel = os.environ["commandsChannel"]
+intro = os.environ["intro"]
+
+
 # Variabels
 globalMessages = []
 
@@ -38,7 +44,7 @@ async def on_ready():
 async def on_message(message):
     global waitForReaction
     global globalMessages
-    if message.channel.id==int(config["credentials"]["commandsChannel"]):
+    if message.channel.id==int(commandsChannel):
         if message.author == client.user:
             return
 
@@ -79,8 +85,12 @@ async def on_message(message):
                         else:
                             if reply!="RESTART":
                                 embed = i.returnEmbed()
-                                channel = client.get_channel(int(config["credentials"]["intro"]))
+                                channel = client.get_channel(int(intro))
                                 q = await channel.send(embed=embed)
+                                try:
+                                    apppendMember(i)
+                                except:
+                                    print("There was some error appending to the database")
                             else:
                                 q = await message.channel.send("Please restart then.")
                                 globalMessages.append(q)
@@ -99,6 +109,7 @@ async def on_message(message):
             # If someone messages in between when someone is mid-way.
             q = await message.reply(f"You can start your own intro process by typing {commands['start']}.")
             globalMessages.append(q)
+            globalMessages.append(message)
 
 @client.event
 async def on_reaction_add(reaction, user):
@@ -118,4 +129,4 @@ async def on_reaction_add(reaction, user):
             elif response == "Reaction":
                 waitForReaction = True
 
-client.run(config['credentials']['token'])
+client.run(token)

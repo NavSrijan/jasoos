@@ -1,7 +1,6 @@
 from discord import Embed
 import pycountry
 import configparser
-import pdb
 
 #VARIABLES
 
@@ -19,7 +18,7 @@ class Person():
         self.id = author.id
         self.name = " "
         self.age = " "
-        self.gender = " "
+        self.sex = " "
         self.hobbies = " "
         self.location = " "
 
@@ -30,7 +29,7 @@ class Person():
                    description = '**Introduction**',
                    color=0xf1c40f ) 
         my.add_field(name='Age', value=self.age, inline=True)
-        my.add_field(name='Gender', value=self.gender, inline=True)
+        my.add_field(name='Gender', value=self.sex, inline=True)
         my.add_field(name='Hobbies', value=self.hobbies, inline=False)
         my.add_field(name='Location', value=self.location, inline=False)
         
@@ -78,7 +77,7 @@ def takeIntro(p1,msg=""):
         p1.state+=1
         p1.messages.append(msg)
     elif state == 3:
-        p1.gender = msg.content
+        p1.sex = msg.content
         reply = "Are you from India?"
 
         '''

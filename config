@@ -1,0 +1,5 @@
+[credentials]
+botName = "Birbal"
+
+[commands]
+start = .puch
